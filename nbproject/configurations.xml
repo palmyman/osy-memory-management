@@ -36,7 +36,8 @@
       </toolsSet>
       <compileType>
         <ccTool>
-          <commandLine>-std=c++11 -Wall -pedantic -Wno-long-long -O2 -c -Werror</commandLine>
+          <standard>8</standard>
+          <commandLine>-Wall -pedantic -Wno-long-long -Werror</commandLine>
         </ccTool>
       </compileType>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
