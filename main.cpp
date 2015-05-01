@@ -1,10 +1,3 @@
-/* 
- * File:   main.cpp
- * Author: palmyman
- *
- * Created on April 30, 2015, 3:48 PM
- */
-
 #ifndef __PROGTEST__
 #include <cstdio>
 #include <cstdlib>
@@ -15,133 +8,22 @@
 using namespace std;
 #endif /* __PROGTEST__ */
 
-#define KB 1024;
-#define MB 1048576;
-
-class Block {
-    int size, prevIndex, nextIndex;
-    uint8_t * data;
-
-public:
-    static int blockCount, heapSize;
-    static uint8_t * heap;
-
-    static uint8_t * first, * last;
-    static int firstIndex, lastIndex;
-
-    Block(int size, uint8_t * data, int prevIndex, int nextIndex) {
-        this->size = size;
-        this->data = data;
-        this->prevIndex = prevIndex;
-        this->nextIndex = nextIndex;
-        blockCount++;
-    }
-    
-    Block(uint8_t * where, int size, int prevIndex = -1) {
-        this->size = size;
-        this->data = data;
-        this->prevIndex = prevIndex;
-        this->nextIndex = nextIndex;
-        blockCount++;
-    }
-
-    ~Block() {
-        blockCount--;
-    }
-
-    uint8_t * GetData() const;
-    int GetNext() const;
-    int GetPrev() const;
-    int GetSize() const;
-
-    void ShiftLeft() {
-
-    }
-
-    void ShiftRight() {
-
-    }
-
-    static bool memoryIsAvalliable(int size) {
-        //TODO
-        return true;
-    }
-};
-
-int Block::blockCount, Block::heapSize, Block::firstIndex, Block::lastIndex;
-uint8_t * Block::heap, * Block::first, * Block::last;
-
-Block * blockTable;
-
-uint8_t * Block::GetData() const {
-    return data;
-}
-
-int Block::GetNext() const {
-    return nextIndex;
-}
-
-int Block::GetPrev() const {
-    return prevIndex;
-}
-
-int Block::GetSize() const {
-    return size;
-}
-
 void HeapInit(void * memPool, int memSize) {
-    Block::blockCount = 0;
-    Block::heapSize = memSize;
-    Block::heap = reinterpret_cast<uint8_t *> (memPool);
-    //Block::heapEnd = reinterpret_cast<uint8_t > (memPool) + memSize;
-
-    blockTable = reinterpret_cast<Block *> (memPool);
-
-    Block::first = Block::last = NULL;
-    Block::firstIndex = Block::lastIndex = -1;
+    /* todo */
 }
 
 void * HeapAlloc(int size) {
-    if (!Block::memoryIsAvalliable(size))
-        return NULL;
-
-    uint8_t * newBlock = reinterpret_cast<uint8_t *> (Block::heap + (Block::heapSize + 1));
-    if(((Block::first != NULL) ? Block::first : reinterpret_cast<uint8_t *>(Block::heap + Block::heapSize)) - newBlock < 0)
-        return NULL;
-        
-    //fill it into a gap
-    uint8_t * potentialBlockEnd = Block::last;
-    int i = Block::lastIndex;
-    while (i != -1) {
-        uint8_t * prevBlockEnd = blockTable[i].GetData()+size;
-        if(Block::last - prevBlockEnd >= size)
-            return NULL; //add block
-        
-        potentialBlockEnd = blockTable[i].GetData();
-        i = blockTable[i].GetPrev();
-    }
-
-    //add it to the beginning
-    uint8_t * emptyEnd = (Block::first != NULL ? Block::first : (Block::heap + Block::heapSize));
-    if(emptyEnd - newBlock >= size) {
-        return NULL; //add block
-    }
-    
+    /* todo */
     return NULL;
 }
 
 bool HeapFree(void * blk) {
-    for (int i = 0; i < Block::blockCount; i++) {
-        if(blockTable[i].GetData() == blk) {
-            blockTable[i].~Block();
-        }
-    }
-
+    /* todo */
     return false;
 }
 
 void HeapDone(int * pendingBlk) {
-    *pendingBlk = Block::blockCount;
+    /* todo */
 }
 
 #ifndef __PROGTEST__
