@@ -15,16 +15,56 @@
 using namespace std;
 #endif /* __PROGTEST__ */
 
+#define KB 1024;
+#define MB 1048576;
+
+class BlockHeader {
+    static unsigned blockCount, heapMaxSize;
+    int size, prev, next;
+    uint8_t * data;
+public:
+    BlockHeader(int size, uint8_t * data, int prev, int next);
+    uint8_t * GetData();
+    int GetNext();
+    int GetPrev();
+    int GetSize();
+};
+
+BlockHeader::BlockHeader(int size, uint8_t* data, int prev, int next) {
+    this->size = size;
+    this->data = data;
+    this->prev = prev;
+    this->next = next;
+}
+
+uint8_t * BlockHeader::GetData() {
+    return data;
+}
+
+int BlockHeader::GetNext() {
+    return next;
+}
+
+int BlockHeader::GetPrev() {
+    return prev;
+}
+
+int BlockHeader::GetSize() {
+    return size;
+}
+
 void HeapInit(void * memPool, int memSize) {
     /* todo */
 }
 
 void * HeapAlloc(int size) {
-    /* todo */
+    void *p = NULL;
+    return p;
 }
 
 bool HeapFree(void * blk) {
     /* todo */
+    return true;
 }
 
 void HeapDone(int * pendingBlk) {
