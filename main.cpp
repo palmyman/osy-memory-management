@@ -19,11 +19,16 @@ using namespace std;
 #define MB 1048576;
 
 class BlockHeader {
-    static unsigned blockCount, heapMaxSize;
-    int size, prev, next;
+    static int blockCount, heapMaxSize;
+    static uint8_t * heap, heapEnd;
+    
+    static uint8_t * first, last;
+    static int firstIndex, lastIndex;
+    
+    int size, prevIndex, nextIndex;
     uint8_t * data;
 public:
-    BlockHeader(int size, uint8_t * data, int prev, int next);
+    BlockHeader(int size, uint8_t * data, int prevIndex, int nextIndex);
     uint8_t * GetData();
     int GetNext();
     int GetPrev();
@@ -33,8 +38,8 @@ public:
 BlockHeader::BlockHeader(int size, uint8_t* data, int prev, int next) {
     this->size = size;
     this->data = data;
-    this->prev = prev;
-    this->next = next;
+    this->prevIndex = prevIndex;
+    this->nextIndex = nextIndex;
 }
 
 uint8_t * BlockHeader::GetData() {
@@ -42,11 +47,11 @@ uint8_t * BlockHeader::GetData() {
 }
 
 int BlockHeader::GetNext() {
-    return next;
+    return nextIndex;
 }
 
 int BlockHeader::GetPrev() {
-    return prev;
+    return prevIndex;
 }
 
 int BlockHeader::GetSize() {
