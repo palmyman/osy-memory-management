@@ -18,48 +18,82 @@ using namespace std;
 #define KB 1024;
 #define MB 1048576;
 
-class BlockHeader {
+class Block {
     static int blockCount, heapMaxSize;
-    static uint8_t * heap, heapEnd;
+    static uint8_t * heap;
     
-    static uint8_t * first, last;
+    static uint8_t * first, * last;
     static int firstIndex, lastIndex;
     
     int size, prevIndex, nextIndex;
     uint8_t * data;
 public:
-    BlockHeader(int size, uint8_t * data, int prevIndex, int nextIndex);
-    uint8_t * GetData();
-    int GetNext();
-    int GetPrev();
-    int GetSize();
+    Block(int size, uint8_t * data, int prevIndex, int nextIndex);
+    ~Block();
+    static void InitStatic(void * memPool, int memSize);
+    
+    int GetBlockCount() const;
+    int GetHeapSize() const;
+    uint8_t * GetHeap() const;
+    uint8_t * GetHeapEnd() const;
+    
+    uint8_t * GetData() const;
+    int GetNext() const;
+    int GetPrev() const;
+    int GetSize() const;    
 };
 
-BlockHeader::BlockHeader(int size, uint8_t* data, int prev, int next) {
+Block::Block(int size, uint8_t * data, int prev, int next) {
     this->size = size;
     this->data = data;
     this->prevIndex = prevIndex;
     this->nextIndex = nextIndex;
+    blockCount++;
 }
 
-uint8_t * BlockHeader::GetData() {
+Block::~Block() {
+    blockCount--;
+}
+
+void Block::InitStatic(void * memPool, int memSize) {
+    blockCount = 0;
+    heapMaxSize = memSize;
+    heap = static_cast<uint8_t *>(memPool);
+    
+    first = last = NULL;    
+    firstIndex = lastIndex = 0;
+}
+
+int Block::GetBlockCount() const {
+    return blockCount;
+}
+
+uint8_t * Block::GetHeap() const {
+    return heap;
+}
+
+uint8_t * Block::GetHeapEnd() const {
+    return heap + heapMaxSize;
+}
+
+uint8_t * Block::GetData() const {
     return data;
 }
 
-int BlockHeader::GetNext() {
+int Block::GetNext() const {
     return nextIndex;
 }
 
-int BlockHeader::GetPrev() {
+int Block::GetPrev() const {
     return prevIndex;
 }
 
-int BlockHeader::GetSize() {
+int Block::GetSize() const {
     return size;
 }
 
 void HeapInit(void * memPool, int memSize) {
-    /* todo */
+    Block::InitStatic(memPool, memSize);
 }
 
 void * HeapAlloc(int size) {
