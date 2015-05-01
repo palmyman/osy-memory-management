@@ -1,0 +1,151 @@
+mas kdyztak skype nebo na chatu?
+skype mam ale nepouzivam
+
+no jsem premyslel , ze bychom si zavolali
+
+i kdyz spolubydlici vlastne spi
+
+ale je to docela hajzl, takze cajk 
+hele jsem napul grogy v posteli...
+
+no tak ja to nejak po chapu napisu
+
+budes mit obousmernej zretezeny seznam, to si mel ?
+j
+
+v tom seznamu budes mit ulozene bloky pameti
+
+neboli struktury
+
+v te strukture si vzdy pamatuji, jestli je na ni neco duleziteho ulozene (true / false ), potom adresa, kde ta struct je alokovana (memPool param), pak kolik ta struktura obhospodaruje mista
+
+na co si musis dat pozor, ze ta struktura neco zabira
+
+takze ze zacatku kdyz delas HeapInit, musis udecist sizeof(jednaStruktura)
+
+toto delas v heap initu
+
+v heapAlloc postupne budes iterovat pres ten spojak a pokud je ta struktura volna a zaroven velikost co chces ulozit je mensi nez velikost volneho + velikost te struktury, tak to tam ulozis
+
+pak si musis pohrat s pointerama, spravne propojit a nastavit, ze ta struktura je uz pouzivana
+
+jinak zbytek co ti z te struct zustane, tak nechas
+
+takze situace...
+
+struktura ma velikost 40B
+
+v heapInitu chces ulozit 500B (memSize)
+
+velikost, co muzes vyuzit pro data bude 460B ( toto chapes? )
+
+pak chces pridat v HeapAlloc 200B
+
+takze se podivas na tu struct a vidis, ze ma k dispozici 460B
+
+takze se tam vlezes
+main.cpp
+
+aha
+
+tak to ti asi muzu poslat 
+
+pokud mi zarucis, ze to tam omylem neposles
+neposlu
+
+a ze to nechas vicemene takto tridne, tak by to nemuseli zjistit
+dam si na to pozor
+dekuju
+
+https://www.dropbox.com/s/2xdaywi1hes2wos/NEPOSILATANIZAHOVNO.cpp?dl=0
+
+ok kazdopadne co dal
+dobrej nazev 
+
+mas teda k dispozici 460B
+jj
+
+a chces ulozit 200B
+
+takze zjistis, ok vleze se to tam
+
+a ty este musis ale tu strukturu naalokovat, takze to bude
+
+40B ta jedna struct, 200B to co chces ulozit, 40B NOVA struct, ktera obhospodaruje zbytek a ten zbytek cini 220B volneho
+
+chapes toto<
+
+teda mas 40B struct ktera ma k dispozici 460B abych byl presny
+chapu
+
+tak toto je alloc
+
+jinak si este musis davat pozor treba kdyz mas struct ktera obhospodaruje 250B
+
+a ty chces ulozit 250B
+
+tak v tomto pripade se neptas jestli 250B+40 <= 250
+
+ale proste k te struct tam naalokujes tech 250B
+
+no.. a pak co se tyce uvolnovani
+
+mas teda seznam spojeny
+
+kde mas ruzne zadefinovane jestli jsou true / false.. neboli platne a nebo neplatne
+
+kdyz nejakou struct budes chtit zneplatit, tak proste tam das false
+ok
+
+apak se ptas, neni nahodou false ve structure te nasledujici?
+
+pokud ano, tak z nich udelas Jednu strukturu
+
+proste tu druhou( nasledujici smazes) a das to do te predchozi
+
+takze mas treba 40 + 150 a ta druha ma 40 + 350
+
+tu 150 ted zfalsujes a zjistis ze ta dalsi je taky false
+
+takze budes mit tu prvni struct ktera bude mit 40 + (150+40+350) mista
+
+a pak se zeptas este, jestli ta predchozi neni taky nahodou false
+
+pokud ano, tak stejna situace
+
+delas to jen na jedno ptani.. nejdrive na next pak na prev
+
+a delas to vzdy, jak nejakou struct zfalsujes
+chapu
+
+a pak heapDone je jasnej
+
+to je vse
+
+davej si pozor, tak to tam neposles
+
+a hlavne, nikomu jinemu toto neposilej
+
+pripadne posli svuj.. 
+nebudu nejsem vocas 
+
+pravo k souboru si dostal jen ty a to jen pro cteni 
+DEKUJU
+
+no, teda..
+
+jen jako inspiraci jsem myslel 
+jasny dik! 
+
+zitra vstavam nekdy kolem 16 asi
+
+pak muzem kdyztak dat skype nebo tak
+ok super ...
+
+ja jinak s tema pointerama nejsem chytrej, ale teorii muzu vysvetlit
+
+okolo tohoto ukolu
+
+pokud to projde vsemi testy az na opsledni kde das 60% tak mas blbe pointerz
+
+to mi musel pak jirka opravovat
