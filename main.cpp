@@ -28,8 +28,16 @@ public:
 
     static uint8_t * first, * last;
     static int firstIndex, lastIndex;
-    
+
     Block(int size, uint8_t * data, int prevIndex, int nextIndex) {
+        this->size = size;
+        this->data = data;
+        this->prevIndex = prevIndex;
+        this->nextIndex = nextIndex;
+        blockCount++;
+    }
+    
+    Block(uint8_t * where, int size, int prevIndex = -1) {
         this->size = size;
         this->data = data;
         this->prevIndex = prevIndex;
@@ -38,18 +46,32 @@ public:
     }
 
     ~Block() {
-        this->blockCount--;
+        blockCount--;
     }
 
     uint8_t * GetData() const;
     int GetNext() const;
     int GetPrev() const;
     int GetSize() const;
-//    friend void HeapInit(void * memPool, int memSize);
+
+    void ShiftLeft() {
+
+    }
+
+    void ShiftRight() {
+
+    }
+
+    static bool memoryIsAvalliable(int size) {
+        //TODO
+        return true;
+    }
 };
 
 int Block::blockCount, Block::heapSize, Block::firstIndex, Block::lastIndex;
 uint8_t * Block::heap, * Block::first, * Block::last;
+
+Block * blockTable;
 
 uint8_t * Block::GetData() const {
     return data;
@@ -70,20 +92,52 @@ int Block::GetSize() const {
 void HeapInit(void * memPool, int memSize) {
     Block::blockCount = 0;
     Block::heapSize = memSize;
-    Block::heap = static_cast<uint8_t *> (memPool);
+    Block::heap = reinterpret_cast<uint8_t *> (memPool);
+    //Block::heapEnd = reinterpret_cast<uint8_t > (memPool) + memSize;
+
+    blockTable = reinterpret_cast<Block *> (memPool);
 
     Block::first = Block::last = NULL;
     Block::firstIndex = Block::lastIndex = -1;
 }
 
 void * HeapAlloc(int size) {
-    void *p = NULL;
-    return p;
+    if (!Block::memoryIsAvalliable(size))
+        return NULL;
+
+    uint8_t * newBlock = reinterpret_cast<uint8_t *> (Block::heap + (Block::heapSize + 1));
+    if(((Block::first != NULL) ? Block::first : reinterpret_cast<uint8_t *>(Block::heap + Block::heapSize)) - newBlock < 0)
+        return NULL;
+        
+    //fill it into a gap
+    uint8_t * potentialBlockEnd = Block::last;
+    int i = Block::lastIndex;
+    while (i != -1) {
+        uint8_t * prevBlockEnd = blockTable[i].GetData()+size;
+        if(Block::last - prevBlockEnd >= size)
+            return NULL; //add block
+        
+        potentialBlockEnd = blockTable[i].GetData();
+        i = blockTable[i].GetPrev();
+    }
+
+    //add it to the beginning
+    uint8_t * emptyEnd = (Block::first != NULL ? Block::first : (Block::heap + Block::heapSize));
+    if(emptyEnd - newBlock >= size) {
+        return NULL; //add block
+    }
+    
+    return NULL;
 }
 
 bool HeapFree(void * blk) {
-    /* todo */
-    return true;
+    for (int i = 0; i < Block::blockCount; i++) {
+        if(blockTable[i].GetData() == blk) {
+            blockTable[i].~Block();
+        }
+    }
+
+    return false;
 }
 
 void HeapDone(int * pendingBlk) {
