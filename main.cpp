@@ -13,57 +13,90 @@ struct Block {
     size_t size;
     bool isBusy;
     Block * prev, * next;
-    static int blockCount, freeCapacity;
+    static int freeCapacity;
     static Block * firstBlock;
 };
 
-int Block::blockCount, Block::freeCapacity;
+int Block::freeCapacity;
 Block * Block::firstBlock;
 
 void HeapInit(void * memPool, int memSize) {
     Block::firstBlock = (Block *) (memPool);
-    Block::freeCapacity = (memSize - sizeof(Block));
-    Block::blockCount = 1;
-    
+    Block::freeCapacity = (memSize - sizeof (Block));
+
     Block::firstBlock->size = Block::freeCapacity;
     Block::firstBlock->prev = Block::firstBlock->next = NULL;
-    Block::firstBlock->adress = (uint8_t *) memPool;    
+    Block::firstBlock->adress = (uint8_t *) memPool;
     Block::firstBlock->isBusy = false;
 }
 
 void * HeapAlloc(int size) {
     Block * newBlock;
-    
+
     for (Block * iter = Block::firstBlock; iter != NULL; iter = iter->next) {
-        if(!iter->isBusy && iter->size >= (size_t)(size + sizeof(Block))) {
-            newBlock = (Block *)(((char *)iter->adress) + size + sizeof(Block));
-            newBlock->adress = (uint8_t *)newBlock;
-            newBlock->next = NULL;
-            newBlock->prev = iter;
-            newBlock->size = iter->size - size - sizeof(Block);
+        if ((iter->isBusy == false) && (iter->size >= (size_t) (size + sizeof (Block))) && (iter->next != NULL)) {
+            newBlock = (Block*) (((uint8_t*) iter->adress) + size + sizeof (Block));
+            newBlock->adress = (uint8_t*) newBlock;
+            newBlock -> prev = iter; //
+            newBlock -> next = iter -> next; //
+            iter -> next = newBlock; //
+            newBlock -> next -> prev = newBlock; //
+
+            newBlock -> size = iter-> size - size - sizeof (Block);
+            newBlock -> isBusy = false;
+
+            iter -> size = size;
+            iter -> isBusy = true;
+
+            return (void*) (Block*) (((uint8_t*) iter->adress) + sizeof (Block));
+        } else if ((iter->isBusy == false) && (iter->size >= (size_t) (size + sizeof (Block))) && (iter->next == NULL)) {
+            newBlock = (Block *) (((uint8_t*) iter->adress) + size + sizeof (Block));
+            newBlock->adress = (uint8_t*) newBlock;
+            newBlock -> next = NULL;
+            newBlock -> prev = iter;
+            newBlock->size = iter->size - size - sizeof (Block);
             newBlock->isBusy = false;
-            
             iter->next = newBlock;
             iter->size = size;
             iter->isBusy = true;
-            return (void *)(Block *)(((char *)iter->adress) + sizeof(Block));
+            return (void*) (Block*) (((uint8_t*) iter->adress) + sizeof (Block));
         }
-    }    
+    }
     return NULL;
 }
 
 bool HeapFree(void * blk) {
-    /* todo */
+    for (Block * iter = Block::firstBlock; iter != NULL; iter = iter->next) {
+        if(iter->adress + sizeof(Block) == blk && iter->isBusy) {
+            iter->isBusy = false;
+            
+            if(iter->next != NULL && !iter->next->isBusy) {
+                iter->size = iter->next->size + iter->size + sizeof(Block);
+                iter->next = iter->next->next;
+                
+                if(iter->next != NULL)
+                    iter->next->prev = iter;
+            }
+            
+            if(iter->prev != NULL && !iter->prev->isBusy) {
+                iter->prev->size = iter->prev->size + iter->size + sizeof(Block);
+                iter->prev->next = iter->next;
+                
+                if(iter->next != NULL)
+                    iter->next->prev = iter->prev;
+            }
+            return true;
+        }
+    }    
     return false;
 }
 
 void HeapDone(int * pendingBlk) {
-    Block * iter = Block::firstBlock;
     int counter = 0;
-    while (iter != NULL) {
-        if(iter->isBusy)
+    for (Block * iter = Block::firstBlock; iter != NULL; iter = iter->next) {
+        if (iter->isBusy)
             counter++;
-    }
+    }    
     * pendingBlk = counter;
 }
 
