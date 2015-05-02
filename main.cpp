@@ -32,7 +32,23 @@ void HeapInit(void * memPool, int memSize) {
 }
 
 void * HeapAlloc(int size) {
-    /* todo */
+    Block * newBlock;
+    
+    for (Block * iter = Block::firstBlock; iter != NULL; iter = iter->next) {
+        if(!iter->isBusy && iter->size >= (size_t)(size + sizeof(Block))) {
+            newBlock = (Block *)(((char *)iter->adress) + size + sizeof(Block));
+            newBlock->adress = (uint8_t *)newBlock;
+            newBlock->next = NULL;
+            newBlock->prev = iter;
+            newBlock->size = iter->size - size - sizeof(Block);
+            newBlock->isBusy = false;
+            
+            iter->next = newBlock;
+            iter->size = size;
+            iter->isBusy = true;
+            return (void *)(Block *)(((char *)iter->adress) + sizeof(Block));
+        }
+    }    
     return NULL;
 }
 
