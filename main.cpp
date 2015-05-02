@@ -33,29 +33,19 @@ void HeapInit(void * memPool, int memSize) {
 void * HeapAlloc(int size) {
     Block * newBlock;
 
-    for (Block * iter = Block::firstBlock; iter != NULL; iter = iter->next) {
-        if ((iter->isBusy == false) && (iter->size >= (size_t) (size + sizeof (Block))) && (iter->next != NULL)) {
-            newBlock = (Block*) (((uint8_t*) iter->adress) + size + sizeof (Block));
-            newBlock->adress = (uint8_t*) newBlock;
-            newBlock -> prev = iter; //
-            newBlock -> next = iter -> next; //
-            iter -> next = newBlock; //
-            newBlock -> next -> prev = newBlock; //
-
-            newBlock -> size = iter-> size - size - sizeof (Block);
-            newBlock -> isBusy = false;
-
-            iter -> size = size;
-            iter -> isBusy = true;
-
-            return (void*) (Block*) (((uint8_t*) iter->adress) + sizeof (Block));
-        } else if ((iter->isBusy == false) && (iter->size >= (size_t) (size + sizeof (Block))) && (iter->next == NULL)) {
+    for (Block * iter = Block::firstBlock; iter != NULL; iter = iter->next) {        
+        if ((iter->isBusy == false) && (iter->size >= (size_t) (size + sizeof (Block)))) {
             newBlock = (Block *) (((uint8_t*) iter->adress) + size + sizeof (Block));
             newBlock->adress = (uint8_t*) newBlock;
-            newBlock -> next = NULL;
-            newBlock -> prev = iter;
+            newBlock->next = iter->next;
+            newBlock->prev = iter;   
+            
+            if(iter->next != NULL)
+                newBlock->next->prev = newBlock;
+            
             newBlock->size = iter->size - size - sizeof (Block);
             newBlock->isBusy = false;
+            
             iter->next = newBlock;
             iter->size = size;
             iter->isBusy = true;
