@@ -12,19 +12,16 @@ struct Block {
     uint8_t * adress;
     size_t size;
     bool isBusy;
-    Block * prev, * next;
-    static int freeCapacity;
+    Block * prev, * next;    
     static Block * firstBlock;
 };
 
-int Block::freeCapacity;
 Block * Block::firstBlock;
 
 void HeapInit(void * memPool, int memSize) {
-    Block::firstBlock = (Block *) (memPool);
-    Block::freeCapacity = (memSize - sizeof (Block));
+    Block::firstBlock = (Block *) (memPool);    
 
-    Block::firstBlock->size = Block::freeCapacity;
+    Block::firstBlock->size = (memSize - sizeof (Block));
     Block::firstBlock->prev = Block::firstBlock->next = NULL;
     Block::firstBlock->adress = (uint8_t *) memPool;
     Block::firstBlock->isBusy = false;
