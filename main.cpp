@@ -13,15 +13,22 @@ struct Block {
     size_t size;
     bool isBusy;
     Block * prev, * next;
-    static int blockCount, freeCapacity, capacity;
+    static int blockCount, freeCapacity;
     static Block * firstBlock;
 };
 
-int Block::blockCount, Block::capacity, Block::freeCapacity;
+int Block::blockCount, Block::freeCapacity;
 Block * Block::firstBlock;
 
 void HeapInit(void * memPool, int memSize) {
-    /* todo */
+    Block::firstBlock = (Block *) (memPool);
+    Block::freeCapacity = (memSize - sizeof(Block));
+    Block::blockCount = 1;
+    
+    Block::firstBlock->size = Block::freeCapacity;
+    Block::firstBlock->prev = Block::firstBlock->next = NULL;
+    Block::firstBlock->adress = (uint8_t *) memPool;    
+    Block::firstBlock->isBusy = false;
 }
 
 void * HeapAlloc(int size) {
@@ -35,7 +42,13 @@ bool HeapFree(void * blk) {
 }
 
 void HeapDone(int * pendingBlk) {
-    /* todo */
+    Block * iter = Block::firstBlock;
+    int counter = 0;
+    while (iter != NULL) {
+        if(iter->isBusy)
+            counter++;
+    }
+    * pendingBlk = counter;
 }
 
 #ifndef __PROGTEST__
