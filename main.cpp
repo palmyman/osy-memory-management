@@ -8,6 +8,18 @@
 using namespace std;
 #endif /* __PROGTEST__ */
 
+struct Block {
+    uint8_t * adress;
+    size_t size;
+    bool isBusy;
+    Block * prev, * next;
+    static int blockCount, freeCapacity, capacity;
+    static Block * firstBlock;
+};
+
+int Block::blockCount, Block::capacity, Block::freeCapacity;
+Block * Block::firstBlock;
+
 void HeapInit(void * memPool, int memSize) {
     /* todo */
 }
